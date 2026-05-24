@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReelCaption — Kannada → English Subtitles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0d0f;
+      --bg2:      #131316;
+      --bg3:      #1a1a1f;
+      --border:   #2a2a32;
+      --border2:  #38383f;
+      --text:     #f0eee8;
+      --muted:    #8a8898;
+      --accent:   #e8c547;
+      --accent2:  #c9a730;
+      --info:     #5b9cf6;
+      --success:  #4caf7d;
+      --error:    #e55c5c;
+      --radius:   10px;
+      --radius-lg:16px;
+      --mono:     'DM Mono', monospace;
+      --display:  'Syne', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ─── Header ─────────────────────────────── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+
+    .logo {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-family: var(--mono);
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── Main layout ─────────────────────────── */
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 6rem;
+    }
+
+    .hero {
+      margin-bottom: 2.5rem;
+    }
+
+    .hero h1 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(28px, 5vw, 42px);
+      letter-spacing: -1px;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 480px;
+      line-height: 1.7;
+    }
+
+    /* ─── Steps indicator ─────────────────────── */
+    .steps-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 2rem;
+    }
+
+    .step-seg {
+      flex: 1;
+      height: 2px;
+      background: var(--border2);
+      border-radius: 1px;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-seg::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0;
+      height: 100%; width: 0%;
+      background: var(--accent);
+      border-radius: 1px;
+      transition: width 0.4s ease;
+    }
+
+    .step-seg.done::after { width: 100%; }
+    .step-seg.active::after { width: 50%; background: var(--muted); }
+
+    /* ─── Cards ───────────────────────────────── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .card:focus-within { border-color: var(--border2); }
+
+    .card-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-label svg { opacity: 0.6; }
+
+    /* ─── Key input ───────────────────────────── */
+    .key-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .key-input {
+      flex: 1;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      letter-spacing: 0.5px;
+    }
+
+    .key-input::placeholder { color: var(--muted); letter-spacing: 0; }
+    .key-input:focus { border-color: var(--accent2); }
+
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 7px;
+      line-height: 1.5;
+    }
+
+    .hint a { color: var(--info); text-decoration: none; }
+    .hint a:hover { text-decoration: underline; }
+
+    /* ─── Drop zone ───────────────────────────── */
+    .drop-zone {
+      border: 1px dashed var(--border2);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      background: var(--bg3);
+      position: relative;
+    }
+
+    .drop-zone:hover, .drop-zone.over {
+      border-color: var(--accent2);
+      background: #1e1c12;
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .drop-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+    }
+
+    .drop-title {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .drop-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .file-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      background: #1b1e14;
+      border: 1px solid #3a3d20;
+      color: #c8d48a;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .size-warn {
+      font-size: 11px;
+      color: #c8902a;
+      margin-top: 6px;
+      padding: 6px 10px;
+      background: #1f1710;
+      border: 1px solid #3d2c10;
+      border-radius: 6px;
+    }
+
+    /* ─── Model selector ──────────────────────── */
+    .model-select {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      width: 100%;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8898' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+
+    .model-select:focus { border-color: var(--accent2); }
+
+    /* ─── Status ──────────────────────────────── */
+    .status {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .status.processing { background: #111c2f; border: 1px solid #1e3660; color: #7baff5; }
+    .status.success    { background: #0e1f17; border: 1px solid #1b3d2a; color: #5dbb8c; }
+    .status.error      { background: #1f1010; border: 1px solid #3d1818; color: #e07070; }
+
+    .spin {
+      display: inline-block;
+      animation: spin 0.85s linear infinite;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Buttons ─────────────────────────────── */
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border2);
+      background: var(--bg3);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s, transform 0.1s;
+      text-decoration: none;
+    }
+
+    .btn:hover { background: var(--bg2); border-color: var(--border2); }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #0d0d0f;
+      border-color: var(--accent);
+      font-weight: 500;
+    }
+
+    .btn.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+    .btn.primary:disabled { background: #3d3710; border-color: #3d3710; color: var(--muted); }
+
+    .btn.ghost { background: transparent; }
+    .btn.ghost:hover { background: var(--bg3); }
+
+    /* ─── SRT result ──────────────────────────── */
+    .result-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .result-title {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .seg-count {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--muted);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .srt-box {
+      background: #0a0a0c;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.8;
+      max-height: 320px;
+      overflow-y: auto;
+      color: var(--text);
+      scrollbar-width: thin;
+      scrollbar-color: var(--border2) transparent;
+    }
+
+    .srt-box::-webkit-scrollbar { width: 4px; }
+    .srt-box::-webkit-scrollbar-track { background: transparent; }
+    .srt-box::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    .srt-entry { margin-bottom: 14px; }
+    .srt-n { color: #4a4a60; }
+    .srt-ts { color: #5a7a9a; }
+    .srt-txt { color: var(--text); }
+
+    .dl-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .import-hint {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .import-hint strong { color: var(--text); font-weight: 500; }
+
+    /* ─── Footer ──────────────────────────────── */
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      padding: 10px 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      z-index: 10;
+    }
+
+    footer span { display: flex; align-items: center; gap: 6px; }
+
+    /* ─── Animations ──────────────────────────── */
+    .fade-in { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    @media (max-width: 600px) {
+      main { padding: 2rem 1rem 5rem; }
+      .hero h1 { font-size: 26px; }
+      .dl-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#">
+    <span class="logo-dot"></span>
+    ReelCaption
+  </a>
+  <span class="badge">Gemini 2.5 Flash</span>
+</header>
+
+<main>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Kannada reels →<br><span>English captions</span></h1>
+    <p>Upload your reel audio, get a ready-to-import .srt file with accurate English subtitles powered by Gemini.</p>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="steps-bar">
+    <div class="step-seg active" id="seg1"></div>
+    <div class="step-seg" id="seg2"></div>
+    <div class="step-seg" id="seg3"></div>
+  </div>
+
+  <!-- API Key -->
+  <div class="card" id="card-key">
+    <div class="card-label">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+      Google AI Studio API key
+    </div>
+    <div class="key-row">
+      <input type="password" class="key-input" id="apiKey" placeholder="AIzaSy..." autocomplete="off" spellcheck="false" />
+      <button class="btn ghost" id="toggleBtn" onclick="toggleKey()" title="Show / hide key" style="padding:10px 12px;">
+        <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <div class="hint">
+      Free key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> · your key never leaves your browser
+    </div>
+  </div>
+
+  <!-- File upload -->
+  <div class="card" id="card-file">
+    <div class="card-label">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      Reel audio or video
+    </div>
+    <div class="drop-zone" id="dropZone"
+         ondragover="doDragOver(event)"
+         ondragleave="doDragLeave(event)"
+         ondrop="doDrop(event)">
+      <input type="file" id="fileIn" accept="audio/*,video/*,.mp4,.mov,.mp3,.m4a,.wav,.ogg,.aac,.webm" onchange="handleFile(this.files[0])" />
+      <div class="drop-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8a8898" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div class="drop-title">Drop file here or click to browse</div>
+      <div class="drop-sub">MP4 · MOV · MP3 · M4A · WAV · OGG · AAC · WebM</div>
+      <div id="filePill"></div>
+    </div>
+    <div id="sizeWarn"></div>
+    <div class="hint" style="margin-top:8px;">
+      Tip: extract just the audio (MP3/M4A) for faster processing. Any reels-length clip works fine.
+    </div>
+  </div>
+
+  <!-- Model + options -->
+  <div class="card">
+    <div class="card-label" style="justify-content:space-between;">
+      <span style="display:flex;align-items:center;gap:6px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        Model
+      </span>
+      <button class="btn ghost" id="fetchModelsBtn" onclick="fetchAvailableModels()" style="padding:3px 10px;font-size:11px;height:auto;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+        fetch available models
+      </button>
+    </div>
+    <select class="model-select" id="modelSel">
+      <option value="gemini-2.5-flash" selected>gemini-2.5-flash (stable · recommended)</option>
+      <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite (faster · cheaper)</option>
+      <option value="gemini-1.5-flash">gemini-1.5-flash (older fallback)</option>
+    </select>
+    <div class="hint" id="modelHint" style="margin-top:6px;">Using <code style="font-family:var(--mono);color:var(--accent);font-size:11px;">v1beta</code> endpoint · stable model ID with no date suffix</div>
+  </div>
+
+  <!-- Status -->
+  <div id="statusWrap" style="display:none;"></div>
+
+  <!-- Action buttons -->
+  <div class="btn-row" style="margin-bottom: 0;">
+    <button class="btn primary" id="runBtn" onclick="runTranslation()" disabled>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Generate English captions
+    </button>
+    <button class="btn ghost" id="resetBtn" onclick="resetAll()" style="display:none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+      Reset
+    </button>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card fade-in" id="resultCard">
+    <div class="result-header">
+      <div class="result-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        SRT Preview
+      </div>
+      <span class="seg-count" id="segCount"></span>
+    </div>
+    <div class="srt-box" id="srtBox"></div>
+    <div class="dl-row">
+      <button class="btn primary" onclick="downloadSRT()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download .srt
+      </button>
+      <button class="btn" id="copyBtn" onclick="copySRT()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy raw SRT
+      </button>
+    </div>
+    <div class="import-hint">
+      <strong>CapCut:</strong> Text → Import Subtitles → pick .srt &nbsp;·&nbsp;
+      <strong>VN:</strong> Subtitles → Import &nbsp;·&nbsp;
+      <strong>DaVinci:</strong> Timeline → Import Subtitle &nbsp;·&nbsp;
+      <strong>Premiere:</strong> Captions panel → Import
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    API key stays in your browser only
+  </span>
+  <span>Powered by Google Gemini 2.5 Flash</span>
+</footer>
+
+<script>
+  /* ── state ── */
+  let currentFile = null;
+  let srtContent  = '';
+
+  /* ── key toggle ── */
+  function toggleKey() {
+    const inp = document.getElementById('apiKey');
+    const svg = document.getElementById('eyeIcon');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      svg.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      inp.type = 'password';
+      svg.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+
+  /* ── drag & drop ── */
+  function doDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('over'); }
+  function doDragLeave(e) { document.getElementById('dropZone').classList.remove('over'); }
+  function doDrop(e) { e.preventDefault(); doDragLeave(e); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }
+
+  /* ── file pick ── */
+  function handleFile(f) {
+    if (!f) return;
+    currentFile = f;
+    const mb = (f.size / 1024 / 1024).toFixed(1);
+    document.getElementById('filePill').innerHTML =
+      `<div class="file-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>${f.name} · ${mb} MB</div>`;
+    const warn = document.getElementById('sizeWarn');
+    if (f.size > 18 * 1024 * 1024) {
+      warn.innerHTML = `<div class="size-warn">⚠ File is ${mb} MB. For best results, extract just the audio (MP3/M4A) first — smaller files process faster and more reliably.</div>`;
+    } else {
+      warn.innerHTML = '';
+    }
+    setStep(2);
+    checkReady();
+  }
+
+  document.getElementById('apiKey').addEventListener('input', checkReady);
+
+  function checkReady() {
+    const ok = document.getElementById('apiKey').value.trim().length > 10 && currentFile;
+    document.getElementById('runBtn').disabled = !ok;
+  }
+
+  /* ── step bar ── */
+  function setStep(n) {
+    for (let i = 1; i <= 3; i++) {
+      const s = document.getElementById('seg' + i);
+      s.className = 'step-seg' + (i < n ? ' done' : i === n ? ' active' : '');
+    }
+  }
+
+  /* ── status ── */
+  function showStatus(html, type) {
+    const spinSVG = `<span class="spin"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg></span>`;
+    const checkSVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><polyline points="20 6 9 17 4 12"/></svg>`;
+    const errSVG   = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+    const icon = type === 'processing' ? spinSVG : type === 'success' ? checkSVG : errSVG;
+    const wrap = document.getElementById('statusWrap');
+    wrap.innerHTML = `<div class="status ${type}">${icon}<span>${html}</span></div>`;
+    wrap.style.display = 'block';
+  }
+
+  function hideStatus() { document.getElementById('statusWrap').style.display = 'none'; }
+
+  /* ── base64 ── */
+  function toBase64(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload  = () => res(r.result.split(',')[1]);
+      r.onerror = () => rej(new Error('Failed to read file'));
+      r.readAsDataURL(file);
+    });
+  }
+
+  /* ── main translation ── */
+  async function runTranslation() {
+    const key   = document.getElementById('apiKey').value.trim();
+    const model = document.getElementById('modelSel').value;
+    if (!key || !currentFile) return;
+
+    document.getElementById('runBtn').disabled = true;
+    document.getElementById('resultCard').style.display = 'none';
+    document.getElementById('resetBtn').style.display = 'none';
+    setStep(3);
+    showStatus('Reading file…', 'processing');
+
+    try {
+      const b64  = await toBase64(currentFile);
+      const mime = currentFile.type || 'audio/mpeg';
+      showStatus(`Sending to ${model} · transcribing Kannada + translating to English…`, 'processing');
+
+      const prompt = `You are a professional subtitle editor. The audio contains speech in Kannada language.
+
+Your job:
+1. Listen to the Kannada speech carefully
+2. Translate each spoken segment into natural, fluent English
+3. Output a valid SRT subtitle file — English translations only, no Kannada text
+
+SRT rules:
+- Sequential number on its own line
+- Timestamp: HH:MM:SS,mmm --> HH:MM:SS,mmm (accurate to the actual speech)
+- English translation (1–2 short lines, max ~8 words per line)
+- One blank line between entries
+- NO markdown, NO explanations, NO preamble — pure SRT only
+
+Start directly with entry 1:`;
+
+      const resp = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { inline_data: { mime_type: mime, data: b64 } },
+                { text: prompt }
+              ]
+            }],
+            generationConfig: {
+              temperature: 0.1,
+              maxOutputTokens: 8192
+            }
+          })
+        }
+      );
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        const msg = err?.error?.message || `API returned ${resp.status}`;
+        if (resp.status === 400 && msg.toLowerCase().includes('inline')) {
+          throw new Error('File too large for inline upload. Extract just the audio (MP3/M4A) and try again.');
+        }
+        if (resp.status === 403) throw new Error('Invalid API key or Gemini API not enabled. Check aistudio.google.com.');
+        throw new Error(msg);
+      }
+
+      const data = await resp.json();
+
+      /* handle finish reason */
+      const candidate = data?.candidates?.[0];
+      const finishReason = candidate?.finishReason;
+      if (finishReason === 'SAFETY') throw new Error('Response blocked by Gemini safety filters. Try a different clip.');
+
+      const raw = (candidate?.content?.parts || [])
+        .map(p => p.text || '')
+        .join('\n')
+        .trim();
+
+      if (!raw) throw new Error('Gemini returned an empty response. Check that the audio has Kannada speech.');
+
+      /* clean up any markdown fences */
+      srtContent = raw.replace(/```[a-z]*\n?/gi, '').replace(/```/g, '').trim();
+
+      renderSRT(srtContent);
+      const count = (srtContent.match(/^\d+\s*$/mg) || []).length;
+      showStatus(`Done! Generated ${count} caption segment${count !== 1 ? 's' : ''}.`, 'success');
+      const rc = document.getElementById('resultCard');
+      rc.style.display = 'block';
+      rc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      document.getElementById('resetBtn').style.display = 'inline-flex';
+
+    } catch (e) {
+      showStatus(e.message, 'error');
+      document.getElementById('runBtn').disabled = false;
+      document.getElementById('resetBtn').style.display = 'inline-flex';
+      setStep(2);
+    }
+  }
+
+  /* ── render SRT preview ── */
+  function renderSRT(srt) {
+    const entries = srt.split(/\n\n+/).filter(e => e.trim());
+    let html = '';
+    entries.forEach(e => {
+      const lines = e.trim().split('\n');
+      if (lines.length >= 2) {
+        const num  = lines[0];
+        const ts   = lines[1] || '';
+        const txt  = lines.slice(2).join('\n');
+        html += `<div class="srt-entry"><span class="srt-n">${escHtml(num)}</span>\n<span class="srt-ts">${escHtml(ts)}</span>\n<span class="srt-txt">${escHtml(txt)}</span></div>`;
+      }
+    });
+    document.getElementById('srtBox').innerHTML = html || `<span style="color:#8a8898">${escHtml(srt)}</span>`;
+    document.getElementById('segCount').textContent = entries.length + ' segments';
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /* ── download ── */
+  function downloadSRT() {
+    if (!srtContent) return;
+    const name = (currentFile?.name || 'captions').replace(/\.[^.]+$/, '') + '_english.srt';
+    const blob = new Blob([srtContent], { type: 'text/plain; charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }
+
+  /* ── copy ── */
+  async function copySRT() {
+    if (!srtContent) return;
+    const btn = document.getElementById('copyBtn');
+    try {
+      await navigator.clipboard.writeText(srtContent);
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+      setTimeout(() => {
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy raw SRT`;
+      }, 2000);
+    } catch(e) {
+      alert('Copy failed. Please select all text in the box and copy manually.');
+    }
+  }
+
+  /* ── fetch available models ── */
+  async function fetchAvailableModels() {
+    const key = document.getElementById('apiKey').value.trim();
+    if (!key) { alert('Paste your API key first, then click this button.'); return; }
+    const btn = document.getElementById('fetchModelsBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg></span> fetching…';
+    try {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}&pageSize=50`);
+      if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e?.error?.message || 'API error ' + r.status); }
+      const data = await r.json();
+      const flashModels = (data.models || [])
+        .filter(m => m.name.includes('flash') && (m.supportedGenerationMethods||[]).includes('generateContent'))
+        .map(m => m.name.replace('models/', ''))
+        .sort();
+      if (!flashModels.length) { alert('No flash models found for this key.'); return; }
+      const sel = document.getElementById('modelSel');
+      sel.innerHTML = '';
+      flashModels.forEach((id, i) => {
+        const opt = document.createElement('option');
+        opt.value = id;
+        const label = id.includes('2.5') && !id.includes('preview') && !id.includes('lite') ? id + ' ✓ recommended' : id;
+        opt.textContent = label;
+        if (i === 0) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      const pref = flashModels.find(m => m === 'gemini-2.5-flash') || flashModels[0];
+      sel.value = pref;
+      document.getElementById('modelHint').textContent = flashModels.length + ' flash model(s) found for your key';
+    } catch(e) {
+      alert('Could not fetch models: ' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg> fetch available models';
+    }
+  }
+
+  /* ── reset ── */
+  function resetAll() {
+    currentFile  = null;
+    srtContent   = '';
+    document.getElementById('filePill').innerHTML   = '';
+    document.getElementById('sizeWarn').innerHTML   = '';
+    document.getElementById('fileIn').value         = '';
+    document.getElementById('resultCard').style.display = 'none';
+    document.getElementById('resetBtn').style.display  = 'none';
+    document.getElementById('runBtn').disabled = true;
+    hideStatus();
+    setStep(1);
+  }
+</script>
+</body>
+</html>
